@@ -8,16 +8,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  String _colorFilter = '';
 
   Future<List<Map<String, dynamic>>> _fetchImages() async {
     try {
-      return await UnsplashApi.searchImages(_searchQuery, _colorFilter);
+      return await UnsplashApi.searchPhotos(_searchQuery);
     } catch (e) {
       // Handle error
-      print('Error: $e');
+      print('Error fetching images: $e');
       return [];
     }
   }
@@ -26,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Unsplash App'),
+        title: const Text('Unsplash App'),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -43,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                 decoration: InputDecoration(
                   labelText: 'Search',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
+                    icon: const Icon(Icons.search),
                     onPressed: () {
                       setState(() {
                         _searchQuery = _searchController.text;
@@ -58,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                 future: _fetchImages(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else if (snapshot.hasError) {
@@ -66,12 +65,12 @@ class _HomePageState extends State<HomePage> {
                       child: Text('Error: ${snapshot.error}'),
                     );
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(
+                    return const Center(
                       child: Text('No results found.'),
                     );
                   } else {
                     return GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 8.0,
                         mainAxisSpacing: 8.0,
@@ -98,9 +97,9 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Expanded(
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.vertical(top: Radius.circular(8.0)),
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8.0)),
                                     child: Image.network(
-                                      imageData['url'],
+                                      imageData['urls']['regular'],
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -111,11 +110,11 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        imageData['title'],
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        'By: ${imageData['user']['username']}',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(height: 4.0),
-                                      Text(imageData['description']),
+                                      const SizedBox(height: 4.0),
+                                      Text(imageData['description'] ?? 'No description available'),
                                     ],
                                   ),
                                 ),
