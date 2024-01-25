@@ -1,4 +1,3 @@
-// home_page.dart
 import 'package:flutter/material.dart';
 import 'unsplash_api.dart';
 import 'image_details_page.dart';
@@ -71,16 +70,17 @@ class _HomePageState extends State<HomePage> {
                       child: Text('No results found.'),
                     );
                   } else {
-                    return ListView.builder(
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 8.0,
+                      ),
                       itemCount: snapshot.data?.length,
                       itemBuilder: (context, index) {
                         final imageData = snapshot.data![index];
-                        return ListTile(
-                          title: Text(imageData['title']),
-                          subtitle: Text(imageData['description']),
-                          leading: Image.network(imageData['url']),
+                        return GestureDetector(
                           onTap: () {
-                            // TODO: Navigate to image details page
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -88,6 +88,40 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
+                          child: Card(
+                            elevation: 4.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(8.0)),
+                                    child: Image.network(
+                                      imageData['url'],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        imageData['title'],
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(height: 4.0),
+                                      Text(imageData['description']),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     );
