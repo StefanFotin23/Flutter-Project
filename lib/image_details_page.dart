@@ -1,8 +1,7 @@
-// image_details_page.dart
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'comment.dart'; // Import the Comment class
+import 'comment.dart';
 
 class ImageDetailsPage extends StatefulWidget {
   final Map<String, dynamic> imageData;
@@ -14,7 +13,7 @@ class ImageDetailsPage extends StatefulWidget {
 }
 
 class _ImageDetailsPageState extends State<ImageDetailsPage> {
-  TextEditingController _commentController = TextEditingController();
+  final TextEditingController _commentController = TextEditingController();
 
   Future<void> _addComment() async {
     String commentText = _commentController.text.trim();
@@ -42,7 +41,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Image Details'),
+        title: const Text('Image Details'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -50,7 +49,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
           Expanded(
             child: PhotoView(
               imageProvider: NetworkImage(widget.imageData['url']),
-              backgroundDecoration: BoxDecoration(
+              backgroundDecoration: const BoxDecoration(
                 color: Colors.black,
               ),
             ),
@@ -59,7 +58,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               widget.imageData['description'] ?? 'No description available',
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
           ),
           Padding(
@@ -69,7 +68,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
               decoration: InputDecoration(
                 hintText: 'Add a comment...',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: _addComment,
                 ),
               ),
@@ -89,7 +88,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                     child: Text('Error: ${snapshot.error}'),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Text('No comments yet.'),
                   );
                 } else {
