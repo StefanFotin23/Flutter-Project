@@ -5,6 +5,7 @@ import 'home_page.dart';
 import 'user_profile_page.dart';
 import 'login_page.dart';
 import 'create_account_page.dart';
+import 'app_home_page.dart'; // Import your AppHomePage
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +16,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/createAccount': (context) => const CreateAccountPage(),
-        '/home': (context) => const AppContainer(),
+        '/home': (context) => const AppHomePage(), // Change to AppHomePage
       },
     );
   }
@@ -70,14 +71,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           // You can use an image as a background or a solid color
           image: DecorationImage(
             image: AssetImage('assets/splash_image.jpg'), // Replace with your image asset
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
+        child: const Center(
           child: CircularProgressIndicator(),
         ),
       ),

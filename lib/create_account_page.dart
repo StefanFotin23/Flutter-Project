@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({Key? key}) : super(key: key);
@@ -14,6 +15,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
   TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   String _errorMessage = '';
 
   // Function to check if the email is valid
@@ -29,6 +33,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   // Function to check if the passwords match
   bool _doPasswordsMatch(String password, String confirmPassword) {
     return password == confirmPassword;
+  }
+
+  // Function to check if the phoneNumber is valid
+  bool _isPhoneNumberValid(String phoneNumber) {
+    return phoneNumber.length == 10;
   }
 
   void _handleCreateAccount() async {
@@ -58,32 +67,44 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       return;
     }
 
+    // Check if the phoneNumber is valid
+    if (!_isPhoneNumberValid(_phoneNumberController.text)) {
+      setState(() {
+        _errorMessage = 'Invalid phone number. Must have exactly 10 digits.';
+      });
+      return;
+    }
+
     try {
       // Use FirebaseAuth to create a new user with email and password
-      await _auth.createUserWithEmailAndPassword(
+      final UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
+      // Access the user data from the UserCredential
+      final User user = userCredential.user!;
+
+      // Save additional user details to Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.email).set({
+        'email': user.email,
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'phoneNumber': _phoneNumberController.text,
+      });
+
       // After successful account creation, you can navigate to another screen
       Navigator.pushReplacementNamed(context, '/login');
     } catch (e) {
-      print('Error creating account: $e');
-
-      // Extract the error message from the exception
-      String errorMessage = 'Error creating account';
-
-      if (e is FirebaseAuthException) {
+      if (e is FirebaseException) {
         // Check if the exception is of type FirebaseAuthException
         // and get the human-readable error message from it
-        errorMessage = '${e.message}';
+        setState(() {
+          // Set an error message that can be displayed in a Text widget
+          _errorMessage = '${e.message}';
+        });
       }
-
-      // Handle errors appropriately (show error message, etc.)
-      setState(() {
-        // Set an error message that can be displayed in a Text widget
-        _errorMessage = errorMessage;
-      });
     }
   }
 
@@ -95,37 +116,70 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 20.0),
+          padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
+                    hintText: 'Enter your email',
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: TextField(
                   controller: _passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Password',
+                    hintText: 'Enter your password',
                   ),
                   obscureText: true,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: TextField(
                   controller: _confirmPasswordController,
                   decoration: const InputDecoration(
                     labelText: 'Confirm Password',
+                    hintText: 'Re-enter your password',
                   ),
                   obscureText: true,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextField(
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'First Name',
+                    hintText: 'Enter your first name',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Last Name',
+                    hintText: 'Enter your last name',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextField(
+                  controller: _phoneNumberController,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number',
+                    hintText: 'Enter your phone number',
+                  ),
                 ),
               ),
               Padding(
@@ -139,7 +193,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Text(
                   _errorMessage,
                   style: const TextStyle(
