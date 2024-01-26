@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -20,12 +22,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future<void> _loadUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _firstName = prefs.getString('firstName') ?? '';
-      _lastName = prefs.getString('lastName') ?? '';
-      _phoneNumber = prefs.getString('phoneNumber') ?? '';
-    });
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.email).get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _firstName = userDoc['firstName'] ?? '';
+          _lastName = userDoc['lastName'] ?? '';
+          _phoneNumber = userDoc['phoneNumber'] ?? '';
+        });
+      }
+    }
   }
 
   String get _displayName {
@@ -38,7 +47,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   String get _displayPhoneNumber {
     if (_phoneNumber.isNotEmpty) {
-      return '+40 $_phoneNumber';
+      return _phoneNumber;
     } else {
       return 'Please add your phone number';
     }
@@ -94,11 +103,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
 
     if (newPhoneNumber != null) {
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('phoneNumber', newPhoneNumber);
-      setState(() {
-        _phoneNumber = newPhoneNumber;
-      });
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Update user details in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.email).update({
+          'phoneNumber': newPhoneNumber,
+        });
+
+        setState(() {
+          _phoneNumber = newPhoneNumber;
+        });
+      }
     }
   }
 
