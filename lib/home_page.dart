@@ -13,7 +13,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  int _currentIndex = 0; // Index of the selected tab
 
   Future<List<Map<String, dynamic>>> _fetchImages() async {
     try {
@@ -57,34 +56,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: [
-                  HomePageContent(fetchImages: _fetchImages),
-                  UserProfilePage(),
-                ],
-              ),
+              child: HomePageContent(fetchImages: _fetchImages),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

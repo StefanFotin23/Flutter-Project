@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_project/app_home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'create_account_page.dart';
 import 'home_page.dart';
@@ -59,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
       // After successful login, navigate to HomePage
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const AppHomePage()),
       );
     } catch (e) {
       if (e is FirebaseAuthException) {

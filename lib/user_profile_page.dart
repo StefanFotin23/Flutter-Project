@@ -2,53 +2,104 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({super.key});
+  const UserProfilePage({Key? key});
 
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  String _displayName = 'John Doe'; // Set the initial display name
+  String _firstName = '';
+  String _lastName = '';
+  String _phoneNumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _firstName = prefs.getString('firstName') ?? '';
+      _lastName = prefs.getString('lastName') ?? '';
+      _phoneNumber = prefs.getString('phoneNumber') ?? '';
+    });
+  }
+
+  String get _displayName {
+    if (_firstName.isNotEmpty || _lastName.isNotEmpty) {
+      return '$_firstName $_lastName';
+    } else {
+      return 'Guest';
+    }
+  }
+
+  String get _displayPhoneNumber {
+    if (_phoneNumber.isNotEmpty) {
+      return '+40 $_phoneNumber';
+    } else {
+      return 'Please add your phone number';
+    }
+  }
+
   String _profilePictureUrl = 'https://example.com/default_profile_picture.jpg';
-  // Set the initial profile picture URL
 
   void _handleLogout() async {
-    // Delete email and password from SharedPreferences
     await _deleteCredentials();
-
-    // Implement your logout logic here
-    // For example, you can navigate to the login page
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  // Function to delete email and password from SharedPreferences
   Future<void> _deleteCredentials() async {
     final prefs = await SharedPreferences.getInstance();
-    print('USER_PROFILE_PAGE: Credentials deleted from SharedPreferences!\n'
-        'email=${prefs.getString('email')} password=${prefs.getString('password')}');
     prefs.remove('email');
     prefs.remove('password');
   }
 
-  // Function to handle changing the profile picture
   void _handleChangeProfilePicture() {
-    // Implement your logic to change the profile picture
-    // This can involve opening a dialog, selecting an image, and updating the _profilePictureUrl
-    // For simplicity, let's assume the new profile picture URL is set in this function
     setState(() {
       _profilePictureUrl = 'https://example.com/new_profile_picture.jpg';
     });
   }
 
-  // Function to handle changing the display name
-  void _handleChangeDisplayName() {
-    // Implement your logic to change the display name
-    // This can involve opening a dialog, taking user input, and updating the _displayName
-    // For simplicity, let's assume the new display name is set in this function
-    setState(() {
-      _displayName = 'New Display Name';
-    });
+  void _handleChangePhoneNumber() async {
+    final newPhoneNumber = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Phone Number'),
+          content: TextField(
+            onChanged: (value) {
+              _phoneNumber = value;
+            },
+            decoration: const InputDecoration(labelText: 'New Phone Number'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(null); // Cancel
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(_phoneNumber); // Confirm
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (newPhoneNumber != null) {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('phoneNumber', newPhoneNumber);
+      setState(() {
+        _phoneNumber = newPhoneNumber;
+      });
+    }
   }
 
   @override
@@ -57,36 +108,46 @@ class _UserProfilePageState extends State<UserProfilePage> {
       appBar: AppBar(
         title: const Text('User Profile'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50.0,
-              backgroundImage: NetworkImage(_profilePictureUrl),
-            ),
-            const SizedBox(height: 16.0),
-            Text(
-              _displayName,
-              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _handleChangeProfilePicture,
-              child: const Text('Change Profile Picture'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _handleChangeDisplayName,
-              child: const Text('Change Display Name'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _handleLogout,
-              child: const Text('Logout'),
-            ),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 100.0,
+                backgroundImage: NetworkImage(_profilePictureUrl),
+              ),
+              const SizedBox(height: 16.0),
+              Text(
+                _displayName,
+                style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16.0),
+              Text(
+                _displayPhoneNumber,
+                style: _phoneNumber.isNotEmpty
+                    ? const TextStyle(fontSize: 16.0)
+                    : const TextStyle(fontSize: 16.0, color: Colors.red),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _handleChangeProfilePicture,
+                child: const Text('Change Profile Picture'),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _handleChangePhoneNumber,
+                child: const Text('Change Phone Number'),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _handleLogout,
+                child: const Text('Logout'),
+              ),
+            ],
+          ),
         ),
       ),
     );
