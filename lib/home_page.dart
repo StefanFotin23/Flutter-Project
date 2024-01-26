@@ -114,7 +114,11 @@ class _HomePageState extends State<HomePage> {
                                         style: const TextStyle(fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(height: 4.0),
-                                      Text(imageData['description'] ?? 'No description available'),
+                                      Text(
+                                        _truncateDescription(imageData['description']),
+                                        maxLines: 1, // You can adjust the number of lines to display
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -132,5 +136,17 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  String _truncateDescription(String? description) {
+    if (description == null) {
+      return 'No description available';
+    }
+
+    const int maxDescriptionLength = 50; // Adjust the maximum length as needed
+
+    return (description.length <= maxDescriptionLength)
+        ? description
+        : '${description.substring(0, maxDescriptionLength)}';
   }
 }
