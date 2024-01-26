@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 class UserProfilePage extends StatefulWidget {
+  const UserProfilePage({super.key});
+
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
   String _displayName = 'John Doe'; // Set the initial display name
-  String _profilePictureUrl = 'https://example.com/default_profile_picture.jpg'; // Set the initial profile picture URL
+  String _profilePictureUrl =
+      'https://example.com/default_profile_picture.jpg'; // Set the initial profile picture URL
 
   // Function to handle the logout button
   void _handleLogout() {
@@ -40,7 +43,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -51,25 +54,25 @@ class _UserProfilePageState extends State<UserProfilePage> {
               radius: 50.0,
               backgroundImage: NetworkImage(_profilePictureUrl),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               _displayName,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _handleChangeProfilePicture,
-              child: Text('Change Profile Picture'),
+              child: const Text('Change Profile Picture'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _handleChangeDisplayName,
-              child: Text('Change Display Name'),
+              child: const Text('Change Display Name'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _handleLogout,
-              child: Text('Logout'),
+              child: const Text('Logout'),
             ),
           ],
         ),

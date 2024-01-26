@@ -4,6 +4,8 @@ import 'create_account_page.dart';
 import 'home_page.dart'; // Import the HomePage
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -27,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
       // After successful login, navigate to HomePage
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } catch (e) {
       if (e is FirebaseAuthException) {
@@ -44,7 +46,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void _navigateToCreateAccount() {
     // Navigate to the CreateAccountPage
-    Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountPage()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const CreateAccountPage()));
   }
 
   @override
@@ -53,8 +56,8 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

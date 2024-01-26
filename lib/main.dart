@@ -11,10 +11,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,23 +24,25 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      home: const LoginPage(),
       routes: {
-        '/login': (context) => LoginPage(),
-        '/createAccount': (context) => CreateAccountPage(),
-        '/home': (context) => AppContainer(),
+        '/login': (context) => const LoginPage(),
+        '/createAccount': (context) => const CreateAccountPage(),
+        '/home': (context) => const AppContainer(),
       },
     );
   }
 }
 
 class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
   @override
   _AuthWrapperState createState() => _AuthWrapperState();
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  bool _isLoggedIn = false; // Set this based on authentication state
+  final bool _isLoggedIn = false; // Set this based on authentication state
 
   @override
   void initState() {
@@ -50,11 +54,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoggedIn ? AppContainer() : LoginPage();
+    return _isLoggedIn ? const AppContainer() : const LoginPage();
   }
 }
 
 class AppContainer extends StatefulWidget {
+  const AppContainer({super.key});
+
   @override
   _AppContainerState createState() => _AppContainerState();
 }
@@ -62,8 +68,8 @@ class AppContainer extends StatefulWidget {
 class _AppContainerState extends State<AppContainer> {
   int _currentIndex = 0; // Index of the selected tab
   final List<Widget> _pages = [
-    HomePage(),
-    UserProfilePage(),
+    const HomePage(),
+    const UserProfilePage(),
     // Add more pages as needed
   ];
 
