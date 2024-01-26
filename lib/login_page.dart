@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'create_account_page.dart';
-import 'home_page.dart'; // Import the HomePage
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -18,6 +19,32 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessage = '';
   bool _showPassword = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials(); // Load credentials when the page is initialized
+  }
+
+  void _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('email', _emailController.text);
+    prefs.setString('password', _passwordController.text);
+    print('LOGIN_PAGE: Credentials saved! email=${_emailController.text} password=${_passwordController.text}');
+  }
+
+  Future<void> _loadCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('email');
+    final savedPassword = prefs.getString('password');
+
+    if (savedEmail != null && savedPassword != null) {
+      // If email and password are saved, attempt to log in
+      _emailController.text = savedEmail;
+      _passwordController.text = savedPassword;
+      _handleLogin();
+    }
+  }
+
   void _handleLogin() async {
     try {
       // Use FirebaseAuth to sign in with email and password
@@ -25,6 +52,9 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      // Save email and password to SharedPreferences
+      _saveCredentials();
 
       // After successful login, navigate to HomePage
       Navigator.pushReplacement(
