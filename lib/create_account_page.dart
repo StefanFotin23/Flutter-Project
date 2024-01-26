@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CreateAccountPage extends StatefulWidget {
+  const CreateAccountPage({Key? key}) : super(key: key);
+
   @override
   _CreateAccountPageState createState() => _CreateAccountPageState();
 }
@@ -10,7 +12,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
   String _errorMessage = '';
 
   // Function to check if the email is valid
@@ -40,13 +43,15 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     // Check if the password is valid
     if (!_isPasswordValid(_passwordController.text)) {
       setState(() {
-        _errorMessage = 'Invalid password. Password must be at least 6 characters.';
+        _errorMessage =
+        'Invalid password. Password must be at least 6 characters.';
       });
       return;
     }
 
     // Check if the passwords match
-    if (!_doPasswordsMatch(_passwordController.text, _confirmPasswordController.text)) {
+    if (!_doPasswordsMatch(
+        _passwordController.text, _confirmPasswordController.text)) {
       setState(() {
         _errorMessage = 'Passwords do not match.';
       });
@@ -88,56 +93,66 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       appBar: AppBar(
         title: const Text('Create Account'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _confirmPasswordController,
-              decoration: const InputDecoration(
-                labelText: 'Confirm Password',
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _handleCreateAccount,
-              child: const Text(
-                'Create Account',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                _errorMessage,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 18.0,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                  ),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2, // Set maximum lines
-                overflow: TextOverflow.ellipsis, // Display ellipsis (...) if the text exceeds the maximum lines
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                  ),
+                  obscureText: true,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _confirmPasswordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                  ),
+                  obscureText: true,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: _handleCreateAccount,
+                  child: const Text(
+                    'Create Account',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 18.0,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

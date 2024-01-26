@@ -6,7 +6,7 @@ import 'comment.dart';
 class ImageDetailsPage extends StatefulWidget {
   final Map<String, dynamic> imageData;
 
-  ImageDetailsPage({required this.imageData});
+  const ImageDetailsPage({super.key, required this.imageData});
 
   @override
   _ImageDetailsPageState createState() => _ImageDetailsPageState();
@@ -95,10 +95,12 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                   return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      final commentData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                      final commentData = snapshot.data!.docs[index].data()
+                          as Map<String, dynamic>;
                       return ListTile(
                         title: Text(commentData['text']),
-                        subtitle: Text('${commentData['author']} - ${commentData['createdDate']}'),
+                        subtitle: Text(
+                            '${commentData['author']} - ${commentData['createdDate']}'),
                       );
                     },
                   );

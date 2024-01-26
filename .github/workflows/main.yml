@@ -1,0 +1,28 @@
+name: Dart CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Dart
+        uses: subosito/dart@v2
+        with:
+          sdk: 3.2.5 # Specify the Dart SDK version
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Format code
+        run: dart format .
+
+      - name: Analyze code
+        run: dart analyze
