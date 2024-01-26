@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_project/firebase_options.dart';
 import 'home_page.dart';
 import 'user_profile_page.dart';
-import 'login_page.dart'; // Import your login page file
-import 'create_account_page.dart'; // Import your create account page file
+import 'login_page.dart';
+import 'create_account_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
+      home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginPage(),
         '/createAccount': (context) => const CreateAccountPage(),
@@ -33,6 +33,58 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    await Future.delayed(Duration(seconds: 2)); // Simulate some initialization time
+
+    final isLoggedIn = /* Add your authentication check logic here */ false;
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) {
+          if (isLoggedIn) {
+            return const AppContainer();
+          } else {
+            return const LoginPage();
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          // You can use an image as a background or a solid color
+          image: DecorationImage(
+            image: AssetImage('assets/splash_image.jpg'), // Replace with your image asset
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+}
+
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});

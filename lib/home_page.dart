@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'unsplash_api.dart';
 import 'image_details_page.dart';
-import 'user_profile_page.dart'; // Import the UserProfilePage
+import 'user_profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                 index: _currentIndex,
                 children: [
                   HomePageContent(fetchImages: _fetchImages),
-                  UserProfilePage(), // Replace with the actual implementation
+                  UserProfilePage(),
                 ],
               ),
             ),

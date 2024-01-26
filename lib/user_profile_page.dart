@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -9,14 +10,25 @@ class UserProfilePage extends StatefulWidget {
 
 class _UserProfilePageState extends State<UserProfilePage> {
   String _displayName = 'John Doe'; // Set the initial display name
-  String _profilePictureUrl =
-      'https://example.com/default_profile_picture.jpg'; // Set the initial profile picture URL
+  String _profilePictureUrl = 'https://example.com/default_profile_picture.jpg';
+  // Set the initial profile picture URL
 
-  // Function to handle the logout button
-  void _handleLogout() {
+  void _handleLogout() async {
+    // Delete email and password from SharedPreferences
+    await _deleteCredentials();
+
     // Implement your logout logic here
     // For example, you can navigate to the login page
     Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  // Function to delete email and password from SharedPreferences
+  Future<void> _deleteCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    print('USER_PROFILE_PAGE: Credentials deleted from SharedPreferences!\n'
+        'email=${prefs.getString('email')} password=${prefs.getString('password')}');
+    prefs.remove('email');
+    prefs.remove('password');
   }
 
   // Function to handle changing the profile picture
