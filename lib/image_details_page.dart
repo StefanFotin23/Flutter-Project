@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'comment.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';  // Import for date formatting
 
 class ImageDetailsPage extends StatefulWidget {
   final Map<String, dynamic> imageData;
 
-  const ImageDetailsPage({super.key, required this.imageData});
+  const ImageDetailsPage({Key? key, required this.imageData}) : super(key: key);
 
   @override
   _ImageDetailsPageState createState() => _ImageDetailsPageState();
@@ -18,22 +20,23 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
   Future<void> _addComment() async {
     String commentText = _commentController.text.trim();
     if (commentText.isNotEmpty) {
-      // Create a new Comment instance
-      Comment comment = Comment(
-        author: 'User123', // Replace with actual user information
-        createdDate: Timestamp.now(),
-        text: commentText,
-      );
+      User? user = FirebaseAuth.instance.currentUser;
 
-      // Add the comment to Firestore
-      await FirebaseFirestore.instance
-          .collection('comments')
-          .doc(widget.imageData['id']) // Use the image ID as the document ID
-          .collection('comments')
-          .add(comment.toMap());
+      if (user != null) {
+        Comment comment = Comment(
+          author: user.displayName ?? user.email!,
+          createdDate: Timestamp.now(),
+          text: commentText,
+        );
 
-      // Clear the comment text field
-      _commentController.clear();
+        await FirebaseFirestore.instance
+            .collection('comments')
+            .doc(widget.imageData['id'])
+            .collection('comments')
+            .add(comment.toMap());
+
+        _commentController.clear();
+      }
     }
   }
 
@@ -48,7 +51,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
         children: [
           Expanded(
             child: PhotoView(
-              imageProvider: NetworkImage(widget.imageData['url']),
+              imageProvider: NetworkImage(widget.imageData['url'] ?? 'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png'),
               backgroundDecoration: const BoxDecoration(
                 color: Colors.black,
               ),
@@ -96,11 +99,15 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       final commentData = snapshot.data!.docs[index].data()
-                          as Map<String, dynamic>;
+                      as Map<String, dynamic>;
+
+                      // Format the created date
+                      DateTime createdDate = (commentData['createdDate'] as Timestamp).toDate();
+                      String formattedDate = DateFormat.yMd().add_Hm().format(createdDate);
+
                       return ListTile(
                         title: Text(commentData['text']),
-                        subtitle: Text(
-                            '${commentData['author']} - ${commentData['createdDate']}'),
+                        subtitle: Text('${commentData['author']} - $formattedDate'),
                       );
                     },
                   );
